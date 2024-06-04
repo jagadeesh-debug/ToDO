@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+    <title>List Now</title>
+</head>
+<body class="flex flex-col h-screen items-center space-y-16 ">
+    <h3 class="text-xl md:text-7xl text-center font-serif">what TODO ?</h3>
+    <div class="w-2/3 flex justify-center">
+    <input type="text" class="text-xl md:text-6xl w-1/2 border " id="input">
+    <button class="relative border " id="add"><box-icon name='plus' class="size-5 md:size-20"></box-icon></button>
+    </div>
+    <div class="flex w-full md:text-5xl justify-center items-center flex-col gap-2" id="list">        
+    <p class="text-end h-8 md:h-20 w-1/2 md:w-1/3 border flex items-center justify-between p-2" id="p"></p>
+            <div class="flex  gap-1 h-8 md:h-20">
+                <button class="border bg-red-300 px-2 h-full" id="add">
+                    <box-icon name='pencil'  class="size-5 md:size-16"></box-icon></button>  
+            </div>
+    </div>  
+<script>
+      // Function to retrieve items from local storage
+      function getItemsFromStorage() {
+        return JSON.parse(localStorage.getItem('todoItems')) || [];
+    }
+
+    // Function to save items to local storage
+    function saveItemsToStorage(items) {
+        localStorage.setItem('todoItems', JSON.stringify(items));
+    }
+
+    // Function to add a new item
+    function addItem() {
+        var input = document.getElementById("input");
+        var newItem = input.value.trim();
+        if (newItem !== "") {
+            var items = getItemsFromStorage();
+            items.push({ text: newItem, edited: false });
+            saveItemsToStorage(items);
+            input.value = "";
+            renderItems(items);
+        }
+    }
+
+    // Function to render items
+    function renderItems(items) {
+        var listDiv = document.getElementById("list");
+        listDiv.innerHTML = "";
+        items.forEach(function(item, index) {
+            var listItem = document.createElement("p");
+            listItem.className = "text-end h-8 md:h-20 w-1/2 md:w-1/3 border flex items-center justify-between p-2";
+            listItem.innerText = item.text;
+            var buttonsDiv = document.createElement("div");
+            buttonsDiv.className = "flex  h-8 md:h-20";
+            var deleteButton = document.createElement("button");
+            deleteButton.className = "border bg-red-300 px-2 h-full";
+            deleteButton.innerHTML = "<box-icon name='x' class='size-5 md:size-16'></box-icon>";
+            deleteButton.onclick = function() {
+                deleteItem(index);
+            };
+            buttonsDiv.appendChild(deleteButton);
+            listItem.appendChild(buttonsDiv);
+            listDiv.appendChild(listItem);
+        });
+    }
+
+    // Function to delete an item
+    function deleteItem(index) {
+        var items = getItemsFromStorage();
+        items.splice(index, 1);
+        saveItemsToStorage(items);
+        renderItems(items);
+    }
+
+    // Event listener for adding a new item
+    document.getElementById("add").addEventListener("click", addItem);
+
+    // Load items from local storage when the page loads
+    document.addEventListener("DOMContentLoaded", function() {
+        var items = getItemsFromStorage();
+        renderItems(items);
+    });
+</script>
+</body>
+</html>
